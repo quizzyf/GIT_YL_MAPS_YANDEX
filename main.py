@@ -7,9 +7,9 @@ import requests
 
 def show_map(ll_spn=None, map_type='map', add_params=None):
     if ll_spn:
-        map_request = f'http://static-maps.yandex.ru/1.x/?{ll_spn}&l={map_type}'
+        map_request = f'https://static-maps.yandex.ru/1.x/?{ll_spn}&l={map_type}'
     else:
-        map_request = f'http://static-maps.yandex.ru/1.x/?l={map_type}'
+        map_request = f'https://static-maps.yandex.ru/1.x/?l={map_type}'
 
     if add_params:
         map_request += "&" + add_params
@@ -59,6 +59,27 @@ def main():
                     ll_spn = f"ll={lat},{lng}&z={z}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
+            elif i.type == pygame.KEYUP:
+                if i.key == pygame.K_UP:
+                    lng += 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_DOWN:
+                    lng -= 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_LEFT:
+                    lat -= 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_RIGHT:
+                    lat += 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
         screen.blit(img, (0, 0))
         pygame.display.update()
     os.remove(m_f)
@@ -67,4 +88,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
