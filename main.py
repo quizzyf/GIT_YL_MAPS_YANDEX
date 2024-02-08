@@ -123,7 +123,8 @@ def main():
                 f_poisk = False
             else:
                 lat, lng = toponym_to_find
-                ll_spn = f"ll={lat},{lng}&z={z}&pt={lat},{lng}"
+                x_m, y_m = lat, lng
+                ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                 m_f = show_map(ll_spn, 'map')
                 img = pygame.image.load(m_f).convert()
                 f_poisk = False
@@ -133,12 +134,12 @@ def main():
             elif i.type == pygame.KEYDOWN:
                 if i.key == pygame.K_PAGEUP and z < 17 and img:
                     z += 1
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={lat},{lng}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_PAGEDOWN and z > 0 and img:
                     z -= 1
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={lat},{lng}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_BACKSPACE:
@@ -149,22 +150,22 @@ def main():
             elif i.type == pygame.KEYUP:
                 if i.key == pygame.K_UP and img:
                     lng += 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_DOWN and img:
                     lng -= 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_LEFT and img:
                     lat -= 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_RIGHT and img:
                     lat += 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
             elif i.type == pygame.MOUSEBUTTONDOWN:
