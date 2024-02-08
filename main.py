@@ -20,17 +20,17 @@ class Word:
     def draw(self):
         txt_surface = self.font.render(str(self.text), True, (0, 0, 0))
         pygame.draw.rect(self.scr, 'black', (self.x, self.y, self.width, self.height), 1)
-        self.scr.blit(txt_surface, (self.x, self.y))
+        self.scr.blit(txt_surface, (self.x + 10, self.y))
 
 
 class Button:
-    def __init__(self, x, y, width, height, scr):
+    def __init__(self, x, y, width, height, scr, name):
         self.x, self.y = x, y
         self.width = width
         self.height = height
-        self.text = 'Искать'
+        self.text = name
         self.scr = scr
-        self.font = pygame.font.SysFont('arial', 20)
+        self.font = pygame.font.SysFont('arial', 15)
         self.buttonRect = pygame.Rect(x, y, self.width, self.height)
 
     def update(self, pos):
@@ -42,7 +42,7 @@ class Button:
         txt_surface = self.font.render(str(self.text), True, (0, 0, 0))
         pygame.draw.rect(self.scr, 'orange', (self.x, self.y, self.width, self.height))
         pygame.draw.rect(self.scr, 'black', (self.x, self.y, self.width, self.height), 1)
-        self.scr.blit(txt_surface, (self.x + 20, self.y + 2))
+        self.scr.blit(txt_surface, (self.x + 25, self.y + 5))
 
 
 def geocode(address):
@@ -111,35 +111,36 @@ def main():
     img = None
     pygame.init()
     screen = pygame.display.set_mode((800, 650))
-    word = Word(150, 600, 300, 30, screen)
-    butn = Button(10, 600, 100, 30, screen)
+    word = Word(150, 600, 350, 30, screen)
+    butn = Button(10, 600, 100, 30, screen, 'Искать')
+    butn_2 = Button(520, 600, 220, 30, screen, 'Сброс поискового результата')
+    metka = ''
     f_poisk = False
     f = True
     while f:
         if f_poisk:
-            print('dfsdg')
-            toponym_to_find = get_coordinates(word.text)
-            if not toponym_to_find:
-                f_poisk = False
-            else:
-                lat, lng = toponym_to_find
-                x_m, y_m = lat, lng
-                ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
-                m_f = show_map(ll_spn, 'map')
-                img = pygame.image.load(m_f).convert()
-                f_poisk = False
+            if word.text:
+                toponym_to_find = get_coordinates(word.text)
+                if toponym_to_find:
+                    lat, lng = toponym_to_find
+                    x_m, y_m = lat, lng
+                    metka = f"&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+            f_poisk = False
         for i in pygame.event.get():
             if i.type == pygame.QUIT:
                 f = False
             elif i.type == pygame.KEYDOWN:
                 if i.key == pygame.K_PAGEUP and z < 17 and img:
                     z += 1
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_PAGEDOWN and z > 0 and img:
                     z -= 1
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_BACKSPACE:
@@ -150,34 +151,41 @@ def main():
             elif i.type == pygame.KEYUP:
                 if i.key == pygame.K_UP and img:
                     lng += 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_DOWN and img:
                     lng -= 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_LEFT and img:
                     lat -= 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
                 elif i.key == pygame.K_RIGHT and img:
                     lat += 0.01
-                    ll_spn = f"ll={lat},{lng}&z={z}&pt={x_m},{y_m}"
+                    ll_spn = f"ll={lat},{lng}&z={z}" + metka
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
             elif i.type == pygame.MOUSEBUTTONDOWN:
                 if i.button == 1:
                     f_poisk = butn.update(i.pos)
+                    if butn_2.update(i.pos):
+                        metka = ''
+                        ll_spn = f"ll={lat},{lng}&z={z}" + metka
+                        m_f = show_map(ll_spn, 'map')
+                        img = pygame.image.load(m_f).convert()
         screen.fill('white')
         word.draw()
         butn.draw()
+        butn_2.draw()
         if img:
             screen.blit(img, (0, 0))
         pygame.display.update()
-    os.remove(m_f)
+    if img:
+        os.remove(m_f)
     pygame.quit()
 
 
