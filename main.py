@@ -146,6 +146,27 @@ def main():
                 else:
                     if i.unicode.lower() in 'йцукенгшщзхъфывапролджэячсмитьбю ,.1234567890':
                         word.update(i.unicode)
+            elif i.type == pygame.KEYUP:
+                if i.key == pygame.K_UP and img:
+                    lng += 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_DOWN and img:
+                    lng -= 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_LEFT and img:
+                    lat -= 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
+                elif i.key == pygame.K_RIGHT and img:
+                    lat += 0.01
+                    ll_spn = f"ll={lat},{lng}&z={z}"
+                    m_f = show_map(ll_spn, 'map')
+                    img = pygame.image.load(m_f).convert()
             elif i.type == pygame.MOUSEBUTTONDOWN:
                 if i.button == 1:
                     f_poisk = butn.update(i.pos)
