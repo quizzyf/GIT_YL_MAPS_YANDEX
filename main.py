@@ -96,6 +96,15 @@ def show_map(ll_spn=None, map_type='map', add_params=None):
     return map_file
 
 
+def get_address(address):
+    toponym = geocode(address)
+    if not toponym:
+        return False
+
+    toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+    return toponym_address
+
+
 def get_coordinates(address):
     toponym = geocode(address)
     if not toponym:
@@ -109,13 +118,18 @@ def get_coordinates(address):
 def main():
     z = 10
     img = None
+    adress = ""
+
     pygame.init()
+    font = pygame.font.Font(None, 20)
     screen = pygame.display.set_mode((800, 650))
     word = Word(150, 600, 350, 30, screen)
     butn = Button(10, 600, 100, 30, screen, 'Искать')
     butn_2 = Button(520, 600, 220, 30, screen, 'Сброс поискового результата')
     metka = ''
+    string_rendered = font.render(adress, 1, pygame.Color('black'))
     f_poisk = False
+    adress = ""
     f = True
     while f:
         if f_poisk:
@@ -126,6 +140,7 @@ def main():
                     x_m, y_m = lat, lng
                     metka = f"&pt={x_m},{y_m}"
                     ll_spn = f"ll={lat},{lng}&z={z}" + metka
+                    adress = get_address(word.text)
                     m_f = show_map(ll_spn, 'map')
                     img = pygame.image.load(m_f).convert()
             f_poisk = False
@@ -172,12 +187,26 @@ def main():
             elif i.type == pygame.MOUSEBUTTONDOWN:
                 if i.button == 1:
                     f_poisk = butn.update(i.pos)
+                    toponym_to_find = get_coordinates(word.text)
+                    if toponym_to_find:
+                        lat, lng = toponym_to_find
+                        x_m, y_m = lat, lng
+                        metka = f"&pt={x_m},{y_m}"
+                        ll_spn = f"ll={lat},{lng}&z={z}" + metka
+                        adress = get_address(word.text)
+                        m_f = show_map(ll_spn, 'map')
+                        img = pygame.image.load(m_f).convert()
                     if butn_2.update(i.pos):
                         metka = ''
+                        adress = ''
                         ll_spn = f"ll={lat},{lng}&z={z}" + metka
                         m_f = show_map(ll_spn, 'map')
                         img = pygame.image.load(m_f).convert()
+
+                    string_rendered = font.render(adress, 1, pygame.Color('black'))
+
         screen.fill('white')
+        screen.blit(string_rendered, (0, 500))
         word.draw()
         butn.draw()
         butn_2.draw()
@@ -191,4 +220,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
