@@ -239,7 +239,7 @@ def main():
                     else:
                         post_code = ''
                     string_rendered = font.render(adress + post_code, 1, pygame.Color('black'))
-
+                    #fdfdg
         screen.fill('white')
         screen.blit(string_rendered, (0, 500))
         word.draw()
